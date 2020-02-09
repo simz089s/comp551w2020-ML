@@ -1,3 +1,8 @@
+# Project files to ignore
+*.data
+*.names
+*.test
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
