@@ -1,4 +1,3 @@
-from __future__ import print_function
 import numpy as np
 import scipy as sp
 import pandas as pd
@@ -24,32 +23,10 @@ def clean_data(save_to_csv):
 
     return (ionosphere_df, adult_df, ttt_df)
 
-def plot_adult(df):
-    title = 'Capital gain per X'
-    df.plot(kind='scatter', x='sex', y='capital-gain', title=title, color='lime')
-
-def plot_ionosphere(df):
-    df.plot(kind='scatter', x=3, y=4, color='teal')
-
-def plot_ttt(df):
-    x_won_with_mm = df.groupby((df.mm == 'x') & (df['x-won'] == 'positive')).count()
-    x_won_with_tl = df[(df.tl == 'x') & (df['x-won'] == 'positive')].sum()
-    title = 'Number of times X won having taken a specific square'
-    x = ('mm', 'tl')
-    y = (x_won_with_mm, x_won_with_tl)
-    df.plot(kind='bar', x=x, y=y, title=title)
-
 def stats_tests(df_tuple):
     ionosphere = df_tuple[0]
     adult = df_tuple[1]
     ttt = df_tuple[2]
-
-    plot_adult(adult)
-    plot_ionosphere(ionosphere)
-    plot_ttt(ttt)
-    plt.show()
-
-    pass
 
 def main():
     stats_tests(clean_data(False))
