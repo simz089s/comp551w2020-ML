@@ -2,6 +2,9 @@
 *.data
 *.names
 *.test
+*.Z
+*.cc
+domain_theory
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
