@@ -38,11 +38,29 @@ class Model():
 
 class LogisticRegression(Model):
     '''Logistic regression using full batch gradient descent'''
-    def __init__(self, df):
+    def __init__(self, df, X, y, learn_rate, num_iter):
+        self.X = X
+        self.y = y
+        self.learn_rate = learn_rate
+        self.num_iter = num_iter
         super(LogisticRegression, self).__init__(df)
 
-    def fit(self, X, y, alpha, theta):
-        '''Gradient descent'''
+    def fit(self):
+        self.ones = np.ones(self.X.shape)
+        self.X = np.hstack((self.ones, self.X))
+        self.y = np.reshape(self.y, (-1, 1))
+        self.theta = np.array(((0,), (0,)))
+
+        self.m = self.X.shape[0]
+        self.h = expit(np.matmul(self.X, self.theta))
+
+        for i in range(self.num_iter):
+            self.theta = self.gradient_descent(self.X, self.y, self.learn_rate, self.theta)
+            if (i % 50) == 0:
+                cost = self.cost(self.X, self.y, self.theta)
+                print(cost)
+
+    def gradient_descent(self, X, y, alpha, theta):
         m = X.shape[0]
         # h = Model.sigmoid(np.matmul(X, theta))
         h = expit(np.matmul(X, theta))

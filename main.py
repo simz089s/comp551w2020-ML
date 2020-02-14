@@ -7,23 +7,13 @@ from scipy.stats import logistic
 from scipy.special import expit
 
 def classify_ionosphere(ionosphere_df):
-    NUM_ITER = 500
     LEARN_RATE = 0.5
-    X = ionosphere_df[2, 0]
+    NUM_ITER = 500
+    X = ionosphere_df[2]
     y = ionosphere_df[0]
-    
-    ones = np.ones(X.shape)
-    X = X.to_numpy()
-    X = np.hstack((ones, X))
-    y = np.reshape(y.to_numpy(), (-1, 1))
-    theta = np.array(((0,), (0,)))
-    
-    model = task2.LogisticRegression(ionosphere_df)
-    theta = model.fit(X, y, LEARN_RATE, theta)
-    for i in range(NUM_ITER):
-        theta = model.fit(X, y, LEARN_RATE, theta)
-        if (i % 50) == 0:
-            print(model.cost(X, y, theta))
+
+    model = task2.LogisticRegression(ionosphere_df, X.to_numpy(), y.to_numpy(), LEARN_RATE, NUM_ITER)
+    model.fit()
 
 def main():
     df_tuple = task1.clean_data(False)
