@@ -23,13 +23,8 @@ def clean_data(save_to_csv):
 
     return (ionosphere_df, adult_df, ttt_df)
 
-def stats_tests(df_tuple):
-    ionosphere = df_tuple[0]
-    adult = df_tuple[1]
-    ttt = df_tuple[2]
-
 def main():
-    stats_tests(clean_data(False))
+    clean_data(False)
 
 if __name__ == "__main__":
     main()
