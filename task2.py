@@ -38,11 +38,13 @@ class Model():
 
 class LogisticRegression(Model):
     '''Logistic regression using full batch gradient descent'''
-    def __init__(self, df, X, y, learn_rate, num_iter):
+    def __init__(self, df, X, y, learn_rate, num_iter, decay, decay_rate):
         self.X = X
         self.y = y
         self.learn_rate = learn_rate
         self.num_iter = num_iter
+        self.decay = decay
+        self.decay_rate = decay_rate
         super(LogisticRegression, self).__init__(df)
 
     def fit(self):
@@ -60,14 +62,16 @@ class LogisticRegression(Model):
         # self.h = expit(np.matmul(self.X, self.theta))
         # self.z = np.dot(self.X, self.theta)
         
+        curr_learn_rate = self.learn_rate
         for i in range(self.num_iter):
-            self.theta = self.gradient_descent(self.X, self.y, self.learn_rate, self.theta)
+            self.theta = self.gradient_descent(self.X, self.y, curr_learn_rate, self.theta)
             if (i % 50) == 0:
                 '''Print cost every 50 iterations'''
                 J = self.cost(self.X, self.y, self.theta)
-                print(J)
-            if self.learn_rate < 0.001:
+                print(f'{self.theta}, {J}, {curr_learn_rate}')
+            if curr_learn_rate < 0.001:
                 return self.theta
+            curr_learn_rate = self.learn_rate * (self.decay**np.floor(i / self.decay_rate))
 
     def gradient_descent(self, X, y, alpha, theta):
         '''One step of full batch gradient descent'''
