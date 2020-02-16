@@ -4,7 +4,6 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 def clean_data(save_to_csv):
-    """TODO: remove ionosphere headers??"""
     NUM_COLS_IONOSPHERE = 35
     ionosphere_cols = list(range(NUM_COLS_IONOSPHERE))
     ionosphere_df = pd.read_csv("ionosphere.data", names=ionosphere_cols, usecols=ionosphere_cols)[ionosphere_cols]
