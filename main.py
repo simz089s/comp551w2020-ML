@@ -7,16 +7,17 @@ from scipy.stats import logistic
 from scipy.special import expit
 
 def classify_ionosphere(ionosphere_df):
-    LEARN_RATE = 0.5
+    LEARN_RATE = .01
     MAX_NUM_ITER = 500
-    DECAY = 0.96
+    DECAY = .96
     DECAY_RATE = 50
+    EPS = 1e-2
     X = ionosphere_df.iloc[:, 2:4]
     y = ionosphere_df.iloc[:, -1]
 
     # b(ad)->0, g(ood)->1
     model = task2.LogisticRegression(ionosphere_df)
-    model.fit(X.to_numpy(), np.vectorize({'b':0, 'g':1}.get)(y), LEARN_RATE, MAX_NUM_ITER, DECAY, DECAY_RATE)
+    w = model.fit(X.to_numpy(), np.vectorize({'b':0, 'g':1}.get)(y), LEARN_RATE, MAX_NUM_ITER, DECAY, DECAY_RATE, EPS)
 
     good = ionosphere_df.loc[y == 'g']
     bad = ionosphere_df.loc[y == 'b']
