@@ -98,20 +98,19 @@ class LogisticRegression(Model):
 
     def kfold_crossval(self, X, y, k=5):
         perfs = []
-        folds = np.array_split(X, k)
-        for i, fold in enumerate(folds):
-            test_set = fold
-            first = folds[:i]
-            second = folds[i+1:]
-            if not first:
-                train_set = second
-            elif not second:
-                train_set = first
-            else:
-                train_set = np.hstack((first, second))
-            w = self.fit(train_set, y)
-            yh = self.predict(train_set, w)
-            acc = self.eval_acc(test_set, y, yh, w)
+        X_folds = np.array_split(X, k, axis=0)
+        y_folds = np.array_split(y, k, axis=0)
+        for i, X_fold in enumerate(X_folds):
+            X_test_set = X_fold
+            X_sets_before = X_folds[:i]
+            X_sets_after = X_folds[i+1:]
+            y_sets_before = y_folds[:i]
+            y_sets_after = y_folds[i+1:]
+            X_train_set = np.concatenate(X_sets_before + X_sets_after, axis=0)
+            y_train_set = np.concatenate(y_sets_before + y_sets_after, axis=0)
+            w = self.fit(X_train_set, y_train_set)
+            yh = self.predict(X_train_set, w)
+            acc = self.eval_acc(X_test_set, y_train_set, yh, w)
             perfs.append(acc)
         return perfs
 

@@ -27,8 +27,8 @@ def classify_ionosphere(ionosphere_df):
     yh = model.predict(X, w)
     acc = model.eval_acc(X, y, yh, w)
     print(f'Accuracy: {acc} %')
-    # perfs = model.kfold_crossval(X, y, k)
-    # print(f'Cross validation: {perfs}')
+    perfs = model.kfold_crossval(X, y, k)
+    print(f'Cross validation: {perfs}')
 
     # good = ionosphere_df.loc[y_df == 'g']
     # bad = ionosphere_df.loc[y_df == 'b']
