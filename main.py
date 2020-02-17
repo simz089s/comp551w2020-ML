@@ -7,20 +7,28 @@ from scipy.stats import logistic
 from scipy.special import expit
 
 def classify_ionosphere(ionosphere_df):
-    LEARN_RATE = .01
-    MAX_NUM_ITER = 500
+    LEARN_RATE = .1
+    MAX_NUM_ITER = 8000
     DECAY = .96
     DECAY_RATE = 50
     EPS = 1e-2
-    X = ionosphere_df.iloc[:, 2:4]
-    y = ionosphere_df.iloc[:, -1]
+    REGUL_LAMBDA = .1
 
-    # b(ad)->0, g(ood)->1
+    X_df = ionosphere_df.iloc[:, :-1]
+    y_df = ionosphere_df.iloc[:, -1]
+    X = X_df.to_numpy()
+    y = np.vectorize({'b':0, 'g':1}.get)(y_df)
+
     model = task2.LogisticRegression(ionosphere_df)
-    w = model.fit(X.to_numpy(), np.vectorize({'b':0, 'g':1}.get)(y), LEARN_RATE, MAX_NUM_ITER, DECAY, DECAY_RATE, EPS)
+    # b(ad)->0, g(ood)->1
+    w = model.fit(X, y, LEARN_RATE, MAX_NUM_ITER, DECAY, DECAY_RATE, EPS, REGUL_LAMBDA)
+    print(w)
+    yh = model.predict(X, w)
+    acc = model.eval_acc(X, y, yh, w)
+    print(f'Accuracy: {acc} %')
 
-    good = ionosphere_df.loc[y == 'g']
-    bad = ionosphere_df.loc[y == 'b']
+    good = ionosphere_df.loc[y_df == 'g']
+    bad = ionosphere_df.loc[y_df == 'b']
     ax = plt.gca()
     good.plot(x=2, y=3, kind='scatter', label='Good', ax=ax, color='lime')
     bad.plot(x=2, y=3, kind='scatter', label='Bad', ax=ax, color='red')
