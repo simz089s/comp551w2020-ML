@@ -37,13 +37,25 @@ def classify_ionosphere(ionosphere_df):
     # bad.plot(x=2, y=3, kind='scatter', label='Bad', ax=ax, color='red')
     # plt.show()
 
+
+def classify_adult(adult_df):
+    y = adult_df.iloc[:, 14]
+    rich = adult_df.loc[y == '>50K']
+    poor = adult_df.loc[y == '<=50K']
+    cat_columns = [1, 3, 5, 6, 7, 8, 9, 13]
+    cont_colums = [0, 2, 4, 10, 11, 12]
+    modeling = task2.NaiveBayes(cat_columns, cont_colums)
+    modeling.fit(rich, poor)
+
+    print(modeling.predict(adult_df.iloc[8, :]))
 def main():
     cleaned_dfs = task1.clean_data(False)
     ionosphere = cleaned_dfs[0]
-    # adult = cleaned_dfs[1]
+    adult = cleaned_dfs[1]
     # ttt = cleaned_dfs[2]
 
     classify_ionosphere(ionosphere)
+    classify_adult(adult)
 
 if __name__ == "__main__":
     main()

@@ -1,3 +1,4 @@
+import catigory, cont_catigory
 import numpy as np
 import scipy as sp
 import pandas as pd
@@ -117,11 +118,108 @@ class LogisticRegression(Model):
 
 class NaiveBayes(Model):
     '''Naïve Bayes'''
-    def __init__(self):
-        pass
+    def __init__(self, catigorical_cols, continious_cols):
+        self.catigorical_cols=catigorical_cols
+        self.continious_cols=continious_cols
 
-    def fit(self):
-        pass
 
-    def predict(self, y_out_pred):
-        pass
+
+    def fit(self, data_positive, data_negitive):
+        #classify = data.iloc[:, 14]
+        #rich = data.loc[y == '>50K']
+        #poor = data.loc[y == '<=50K']
+
+        #pos first
+        total_num_pos=len(data_positive)
+        self.probabilites_pos = []
+        for i in self.catigorical_cols:
+            colum_list = []
+            catigories = data_positive.iloc[:, i].unique()
+            col = data_positive.iloc[:, i]
+            for cat in catigories:
+                data_in_catagor = data_positive.loc[col == cat]
+                prob = len(data_in_catagor)/total_num_pos
+                new_entry = catigory.catigory(cat, prob)
+                colum_list.append(new_entry)
+
+            self.probabilites_pos.append(colum_list)
+
+
+
+        total_num_neg = len(data_negitive)
+        self.probabilites_neg = []
+        for i in self.catigorical_cols:
+            colum_list = []
+            catigories = data_negitive.iloc[:, i].unique()
+            col = data_negitive.iloc[:, i]
+            for cat in catigories:
+                data_in_catagor = data_negitive.loc[col == cat]
+                prob = len(data_in_catagor) / total_num_neg
+                new_entry = catigory.catigory(cat, prob)
+                colum_list.append(new_entry)
+            self.probabilites_neg.append(colum_list)
+
+        self.prob_pos = total_num_pos/(total_num_pos+total_num_neg)
+        self.prob_neg = total_num_neg / (total_num_pos + total_num_neg)
+
+        self.continious_prob_pos = []
+        for i in self.continious_cols:
+            total = data_positive.iloc[:, i].sum()
+            mean = total/len(data_positive.iloc[:, i])
+            stdev = data_positive.iloc[:, i].std()
+            new_ent = cont_catigory.cont_catigory(mean, stdev)
+            self.continious_prob_pos.append(new_ent)
+
+        self.continious_prob_neg = []
+        for i in self.continious_cols:
+            total = data_negitive.iloc[:, i].sum()
+            mean = total / len(data_negitive.iloc[:, i])
+            stdev = data_negitive.iloc[:, i].std()
+            new_ent = cont_catigory.cont_catigory(mean, stdev)
+            self.continious_prob_neg.append(new_ent)
+
+    def predict(self, input_point):
+        yYes=self.prob_pos
+        pno=self.prob_neg
+        #print(self.probabilites_pos)
+        #print(self.catigorical_cols)
+        #print(len(self.probabilites_pos))
+        #print(len(self.catigorical_cols))
+        count = 0
+        for i in self.catigorical_cols:
+            cata = input_point.iloc[i]
+            for j in self.probabilites_pos[count]:
+                if j.getcat()==cata:
+                    yYes= yYes*j.getprob()
+            count = count+1
+
+        #print(len(self.continious_cols))
+        #print(len(self.continious_prob_pos))
+        #print(len(input_point))
+        count = 0
+        for i in self.continious_cols:
+            yYes = yYes * self.continious_prob_pos[count].get_prob(input_point.iloc[i])
+            count=count+1
+
+        count = 0
+        for i in self.catigorical_cols:
+            cata = input_point.iloc[i]
+            for j in self.probabilites_neg[count]:
+                if j.getcat()==cata:
+                    pno= pno*j.getprob()
+            count=count+1
+        count = 0
+        for i in self.continious_cols:
+            pno = pno * self.continious_prob_neg[count].get_prob(input_point.iloc[i])
+            count=count+1
+
+
+        pYesNormal=(yYes)/(yYes+pno)
+        pNoNormal = (pno)/(yYes+pno)
+
+        if pYesNormal>pNoNormal:
+            perdiction=True
+        else:
+            perdiction=False
+
+        return perdiction
