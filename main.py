@@ -13,6 +13,7 @@ def classify_ionosphere(ionosphere_df):
     DECAY_RATE = 50
     EPS = 1e-2
     REGUL_LAMBDA = .1
+    k = 5 # of folds for cross validation
 
     X_df = ionosphere_df.iloc[:, :-1]
     y_df = ionosphere_df.iloc[:, -1]
@@ -26,13 +27,15 @@ def classify_ionosphere(ionosphere_df):
     yh = model.predict(X, w)
     acc = model.eval_acc(X, y, yh, w)
     print(f'Accuracy: {acc} %')
+    # perfs = model.kfold_crossval(X, y, k)
+    # print(f'Cross validation: {perfs}')
 
-    good = ionosphere_df.loc[y_df == 'g']
-    bad = ionosphere_df.loc[y_df == 'b']
-    ax = plt.gca()
-    good.plot(x=2, y=3, kind='scatter', label='Good', ax=ax, color='lime')
-    bad.plot(x=2, y=3, kind='scatter', label='Bad', ax=ax, color='red')
-    plt.show()
+    # good = ionosphere_df.loc[y_df == 'g']
+    # bad = ionosphere_df.loc[y_df == 'b']
+    # ax = plt.gca()
+    # good.plot(x=2, y=3, kind='scatter', label='Good', ax=ax, color='lime')
+    # bad.plot(x=2, y=3, kind='scatter', label='Bad', ax=ax, color='red')
+    # plt.show()
 
 def main():
     cleaned_dfs = task1.clean_data(False)

@@ -96,6 +96,25 @@ class LogisticRegression(Model):
         acc = (np.sum(correct) / N) * 100
         return acc
 
+    def kfold_crossval(self, X, y, k=5):
+        perfs = []
+        folds = np.array_split(X, k)
+        for i, fold in enumerate(folds):
+            test_set = fold
+            first = folds[:i]
+            second = folds[i+1:]
+            if not first:
+                train_set = second
+            elif not second:
+                train_set = first
+            else:
+                train_set = np.hstack((first, second))
+            w = self.fit(train_set, y)
+            yh = self.predict(train_set, w)
+            acc = self.eval_acc(test_set, y, yh, w)
+            perfs.append(acc)
+        return perfs
+
 
 class NaiveBayes(Model):
     '''Naïve Bayes'''
